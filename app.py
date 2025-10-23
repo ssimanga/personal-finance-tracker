@@ -28,12 +28,29 @@ def save_transaction(description, amount):
 @app.route("/")
 def index():
     transactions = load_transactions()
-    return render_template("Index.html", transactions=transactions)
+    balance = 0.0
+    for t in transactions:
+        balance += float(t['amount'])
+    return render_template("Index.html", transactions=transactions, balance=balance)
 
 @app.route("/add", methods=["POST"])
 def add_transaction():
     description = request.form['description']
-    amount = request.form['amount']
+    amount_str = request.form['amount']
+    balance = 0.0
+
+    if not description:
+        error = "Description cannot be empty."
+        transactions = load_transactions()
+        return render_template("Index.html", transactions=transactions, error=error, balance=balance)
+    
+    try:
+        amount = float(amount_str)
+    except ValueError:
+        error = "Invalid amount. please enter a number"
+        transactions = load_transactions()
+        return render_template("Index.html", transactions=transactions, error=error, balance=balance)
+
 
     save_transaction(description, amount)
 

@@ -9,16 +9,20 @@
 <body>
     <div class="container">
         <h1>Add a New Transaction</h1>
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
         <form action="/add" method="post">
             <label for="deacription">Description:</label>
-            <input type="text" name="description" id="description" required>
+            <input type="text" name="description" id="description">
             <label for="amount">Amount (Use '-' for expenses):</label>
-            <input type="number" name="amount" id="amount" step="0.01" required>
+            <input type="number" name="amount" id="amount" step="0.01">
             <input type="submit" value="Add Transaction">
         </form>
         <hr style="margin: 30px 0;">
 
         <h2>All Transactions</h2>
+        <h3>Current Balance: R {{ "%.2f" | format(balance) }}</h3>
         <table>
             <thead>
                 <tr>
@@ -30,7 +34,9 @@
                 {% for transaction in transactions %}
                 <tr>
                     <td>{{transaction.description}}</td>
-                    <td>{{transaction.amount}}</td>
+                    <td class="{{'income' if transaction.amount|float >= 0 else 'expense'}}">
+                        R {{ "%.2f" | format(transaction.amount|float)}}
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
